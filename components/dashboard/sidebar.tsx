@@ -2203,152 +2203,294 @@
 
 
 
+
+// "use client"
+
+// import { useState } from "react"
+// import { usePathname, useRouter } from "next/navigation"
+// import {
+//   Home,
+//   Wrench,
+//   Activity,
+//   Factory,
+//   Settings,
+//   ChevronRight,
+//   ChevronLeft,
+//   UserCircle,
+//   LogOut,
+// } from "lucide-react"
+// import { Button } from "@/components/ui/button"
+// import Image from "next/image"
+
+// const LOGO_URL = "/logo.svg"
+
+// const MENU_ITEMS = [
+//   { id: "dashboard", label: "Dashboard",           icon: Home,     path: "/dashboard" },
+//   { id: "mpi",       label: "MPI",                 icon: Wrench,   path: "/dashboard/mpi" },
+//   { id: "flow",      label: "Assembly Process",    icon: Activity, path: "/dashboard/flow" },
+//   { id: "stations",  label: "Stations",            icon: Factory,  path: "/dashboard/stations" },
+//   { id: "settings",  label: "Settings",            icon: Settings, path: "/dashboard/settings" },
+// ] as const
+
+// const ROLE_MENU_MAP: Record<string, string[]> = {
+//   admin   : ["dashboard", "mpi", "flow", "stations", "settings"],
+//   manager : ["dashboard", "mpi", "flow", "stations", "settings"],
+//   engineer: ["dashboard", "mpi", "stations"],
+//   account : ["dashboard", "settings"],
+// }
+
+// const MENU_PERM_MAP: Record<string, string> = {
+//   dashboard: "dashboard:view",
+//   mpi      : "mpi:view",
+//   flow     : "flow:view",
+//   stations : "station:view",
+//   settings : "settings:view",
+// }
+
+// interface Props {
+//   onLogout: () => void
+//   username: string
+//   onToggle?: (collapsed: boolean) => void
+// }
+
+// export default function DashboardSidebar({ onLogout, username, onToggle }: Props) {
+//   const [isCollapsed, setIsCollapsed] = useState(false)
+//   const pathname = usePathname()
+//   const router   = useRouter()
+
+//   /* ─── read role & permissions saved in LoginForm ──────────────── */
+//   const role = (typeof window !== "undefined" ? localStorage.getItem("role") : "")?.toLowerCase() ?? ""
+
+//   const permissions: string[] =
+//     typeof window !== "undefined"
+//       ? JSON.parse(localStorage.getItem("permissions") || "[]")
+//       : []
+
+//   /* ─── build allowed menu list (role union permissions) ────────── */
+//   const roleMenus   = new Set(ROLE_MENU_MAP[role] ?? [])
+
+//   permissions.forEach((perm) => {
+//     const menuId = Object.entries(MENU_PERM_MAP).find(([, p]) => p === perm)?.[0]
+//     if (menuId) roleMenus.add(menuId)
+//   })
+
+//   const menuItems = MENU_ITEMS.filter((m) => roleMenus.has(m.id))
+
+//   /* ─── handlers ────────────────────────────────────────────────── */
+//   const toggleSidebar = () => {
+//     const next = !isCollapsed
+//     setIsCollapsed(next)
+//     onToggle?.(next)
+//   }
+
+//   const go = (path: string) => router.push(path)
+
+//   /* ─── render ──────────────────────────────────────────────────── */
+//   return (
+//     <div
+//       className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 ${
+//         isCollapsed ? "w-16" : "w-64"
+//       } min-h-screen flex flex-col fixed h-full z-10 transition-[width] duration-300`}
+//     >
+//       {/* header */}
+//       <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+//         {!isCollapsed && <Image src={LOGO_URL} alt="Logo" width={120} height={32} priority />}
+//         <Button variant="ghost" size="sm" onClick={toggleSidebar} className="p-1 h-8 w-8">
+//           {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+//         </Button>
+//       </div>
+
+//       {/* user info */}
+//       {!isCollapsed && (
+//         <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
+//           <div className="flex items-center gap-2">
+//             <UserCircle className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+//             <div>
+//               <div className="font-medium truncate">{username}</div>
+//               {role && <div className="text-xs text-gray-500 capitalize">{role}</div>}
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* navigation */}
+//       <nav className="flex-1 p-4 overflow-hidden hover:overflow-y-auto">
+//         <div className="space-y-2">
+//           {menuItems.map(({ id, label, icon: Icon, path }) => {
+//             const active = pathname === path
+//             return (
+//               <Button
+//                 key={id}
+//                 variant={active ? "default" : "ghost"}
+//                 className={`w-full justify-start h-10 ${
+//                   active
+//                     ? "bg-green-600 text-white hover:bg-green-700"
+//                     : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+//                 } ${isCollapsed ? "px-2" : "px-3"}`}
+//                 onClick={() => go(path)}
+//               >
+//                 <Icon className={`h-4 w-4 ${isCollapsed ? "" : "mr-3"}`} />
+//                 {!isCollapsed && <span className="text-sm">{label}</span>}
+//               </Button>
+//             )
+//           })}
+//         </div>
+//       </nav>
+
+//       {/* logout */}
+//       <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+//         <Button
+//           variant="ghost"
+//           className={`justify-start h-10 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 ${
+//             isCollapsed ? "w-10 p-0" : "w-auto px-3"
+//           }`}
+//           onClick={onLogout}
+//         >
+//           <LogOut className={`h-4 w-4 ${isCollapsed ? "" : "mr-3"}`} />
+//           {!isCollapsed && <span className="text-sm">Sign Out</span>}
+//         </Button>
+//       </div>
+//     </div>
+//   )
+// }
+
+
+
+
+
+
+
+
+
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { usePathname, useRouter } from "next/navigation"
+import {
+  Home, Wrench, Activity, Factory, Settings,
+  ChevronRight, ChevronLeft, UserCircle, LogOut,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import {
-  Factory,
-  LogOut,
-  Home,
-  Settings,
-  ChevronRight,
-  ChevronLeft,
-  Wrench,
-  Activity,
-  UserCircle,
-} from "lucide-react"
-
-import { usePermissions } from "@/components/context/PermissionContext"
 
 const LOGO_URL = "/logo.svg"
 
-interface DashboardSidebarProps {
-  onLogout: () => void
-  username: string
-  onToggle?: (collapsed: boolean) => void
-}
-
-type MenuItem = {
+type MenuDef = {
   id: string
   label: string
-  icon: React.ElementType
+  icon: any
   path: string
+  roles?: string[]         // optional role whitelist
+  perms?: string[]         // optional permission whitelist
 }
 
-const allMenuItems: MenuItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: Home, path: "/dashboard" },
-  { id: "mpi", label: "MPI", icon: Wrench, path: "/dashboard/mpi" },
-  { id: "flow", label: "Assembly Process", icon: Activity, path: "/dashboard/flow" },
-  { id: "stations", label: "Stations", icon: Factory, path: "/dashboard/stations" },
-  { id: "settings", label: "Settings", icon: Settings, path: "/dashboard/settings" },
+const MENUS: MenuDef[] = [
+  { id: "dashboard", label: "Dashboard", icon: Home, path: "/dashboard",
+    roles: ["admin","manager","engineer","account"],
+    },
+
+  { id: "mpi", label: "MPI", icon: Wrench, path: "/dashboard/mpi",
+    roles: ["admin","manager","engineer"],
+     },
+
+  { id: "flow", label: "Assembly Process", icon: Activity, path: "/dashboard/flow",
+    roles: ["admin","manager"],
+   },
+
+  { id: "stations", label: "Stations", icon: Factory, path: "/dashboard/stations",
+    roles: ["admin","manager","engineer"],
+    },
+
+  { id: "settings", label: "Settings", icon: Settings, path: "/dashboard/settings",
+    roles: ["admin","manager"],
+   },
 ]
 
-const designationToMenuMap: Record<string, string[]> = {
-  admin: ["dashboard", "mpi", "flow", "stations", "settings"],
-  manager: ["dashboard", "mpi", "flow", "stations", "settings"],
-  engineer: ["dashboard", "mpi", "stations"],
-  account: ["dashboard", "settings"],
+function getAllowedMenuItems(role: string, perms: string[]): MenuDef[] {
+  return MENUS.filter(m => {
+    const okByRole  = !m.roles || m.roles.includes(role)
+    const okByPerms = !m.perms || m.perms.every(p => perms.includes(p))
+    return okByRole && okByPerms       // union logic
+  })
 }
 
-export default function DashboardSidebar({ onLogout, username, onToggle }: DashboardSidebarProps) {
+export default function DashboardSidebar({
+  onLogout, username, onToggle,
+}: { onLogout: () => void; username: string; onToggle?: (c:boolean)=>void }) {
+
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const { designation } = usePermissions()
+  const pathname  = usePathname()
+  const router    = useRouter()
 
-  const pathname = usePathname()
-  const router = useRouter()
+  const role  = (typeof window !== "undefined" ? localStorage.getItem("role") : "")?.toLowerCase() ?? ""
+  const perms = typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("permissions") || "[]")
+      : []
 
-  const allowedMenus = designationToMenuMap[designation?.toLowerCase() || ""] || []
-  const menuItems = allMenuItems.filter((item) => allowedMenus.includes(item.id))
+  const menuItems = useMemo(() => getAllowedMenuItems(role, perms), [role, perms])
 
-  const toggleSidebar = () => {
-    const newState = !isCollapsed
-    setIsCollapsed(newState)
-    if (onToggle) onToggle(newState)
-  }
-
-  const handleNavigation = (path: string) => {
-    router.push(path)
-  }
+  const toggle  = () => { const c=!isCollapsed; setIsCollapsed(c); onToggle?.(c) }
+  const go      = (p:string) => router.push(p)
 
   return (
-    <div
-      className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 ${
-        isCollapsed ? "w-16" : "w-64"
-      } min-h-screen flex flex-col fixed h-full z-10 transition-[width] duration-300`}
-    >
-      {/* Header */}
-      <div className="px-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between">
-          {!isCollapsed && (
-            <Image
-              src={LOGO_URL}
-              alt="Network Logo"
-              width={160}
-              height={100}
-              className="h-auto"
-            />
-          )}
-          <Button variant="ghost" size="sm" onClick={toggleSidebar} className="p-1 h-8 w-8">
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </Button>
-        </div>
+    <div className={`bg-white dark:bg-gray-800 border-r ${
+      isCollapsed ? "w-16" : "w-64"} min-h-screen flex flex-col fixed h-full z-10 transition-[width] duration-300`}>
+
+      {/* header */}
+      <div className="p-4 border-b flex items-center justify-between">
+        {!isCollapsed && <Image src={LOGO_URL} alt="Logo" width={120} height={32} priority />}
+        <Button variant="ghost" size="sm" onClick={toggle} className="p-1 h-8 w-8">
+          {isCollapsed ? <ChevronRight className="h-4 w-4"/> : <ChevronLeft className="h-4 w-4"/>}
+        </Button>
       </div>
 
-      {/* Username & Designation */}
+      {/* user */}
       {!isCollapsed && (
-        <div className="px-4 p-4 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
+        <div className="px-4 py-2 text-sm border-b">
           <div className="flex items-center gap-2">
-            <UserCircle className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            <UserCircle className="w-4 h-4"/>
             <div>
               <div className="font-medium truncate">{username}</div>
-              {designation && <div className="text-xs text-gray-500 capitalize">{designation}</div>}
+              {role && <div className="text-xs text-gray-500 capitalize">{role}</div>}
             </div>
           </div>
         </div>
       )}
 
-      {/* Navigation */}
+      {/* navigation */}
       <nav className="flex-1 p-4 overflow-hidden hover:overflow-y-auto">
         <div className="space-y-2">
-          {menuItems.map((item) => {
-            const Icon = item.icon
-            const isActive = pathname === item.path
-
+          {menuItems.map(({ id,label,icon:Icon,path }) => {
+            const active = pathname === path
             return (
-              <Button
-                key={item.id}
-                variant={isActive ? "default" : "ghost"}
+              <Button key={id}
+                variant={active?"default":"ghost"}
                 className={`w-full justify-start h-10 ${
-                  isActive
+                  active
                     ? "bg-green-600 text-white hover:bg-green-700"
                     : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 } ${isCollapsed ? "px-2" : "px-3"}`}
-                onClick={() => handleNavigation(item.path)}
-              >
-                <Icon className={`h-4 w-4 ${isCollapsed ? "" : "mr-3"}`} />
-                {!isCollapsed && <span className="text-sm">{item.label}</span>}
+                onClick={() => go(path)}>
+                <Icon className={`h-4 w-4 ${isCollapsed? "" : "mr-3"}`}/>
+                {!isCollapsed && <span className="text-sm">{label}</span>}
               </Button>
             )
           })}
         </div>
       </nav>
 
-      {/* Logout */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
-        <Button
-          variant="ghost"
-          className={`justify-start h-10 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 ${
-            isCollapsed ? "w-10 p-0" : "w-auto px-3"
-          }`}
-          onClick={onLogout}
-        >
-          <LogOut className={`h-4 w-4 ${isCollapsed ? "" : "mr-3"}`} />
+      {/* logout */}
+      <div className="p-4 border-t">
+        <Button variant="ghost"
+          className={`justify-start h-10 text-green-600 hover:bg-green-50 ${
+            isCollapsed ? "w-10 p-0" : "w-auto px-3"}`} onClick={onLogout}>
+          <LogOut className={`h-4 w-4 ${isCollapsed?"":"mr-3"}`}/>
           {!isCollapsed && <span className="text-sm">Sign Out</span>}
         </Button>
       </div>
     </div>
   )
 }
+
+
+

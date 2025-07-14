@@ -441,7 +441,7 @@ export function DepartmentList({
                 <tr className="border-b border-slate-200 dark:border-slate-700">
                   <th className="h-12 px-4 text-left font-semibold text-slate-700 dark:text-slate-300">Name</th>
                   <th className="h-12 px-4 text-left font-semibold text-slate-700 dark:text-slate-300">Description</th>
-                  {/* <th className="h-12 px-4 text-left font-semibold text-slate-700 dark:text-slate-300">Roles</th> */}
+                  <th className="h-12 px-4 text-left font-semibold text-slate-700 dark:text-slate-300">Roles</th>
                   <th className="h-12 px-4 text-left font-semibold text-slate-700 dark:text-slate-300">Designations</th>
                   <th className="h-12 px-4 text-left font-semibold text-slate-700 dark:text-slate-300">Created At</th>
                   <th className="h-12 px-4 text-left font-semibold text-slate-700 dark:text-slate-300">Status</th>
@@ -457,14 +457,14 @@ export function DepartmentList({
                     <td className="p-4 align-middle font-medium">{department.name}</td>
                     <td className="p-4 align-middle">{department.description || "—"}</td>
 
-                    {/* <td className="p-4 align-middle">
+                    <td className="p-4 align-middle">
                       {department.roles.length > 0
                         ? department.roles
                             .slice(0, 2)
                             .map((role) => role.name)
                             .join(", ") + (department.roles.length > 2 ? ", ..." : "")
                         : "—"}
-                    </td> */}
+                    </td>
 
                     <td className="p-4 align-middle">
                       {department.designations && department.designations.length > 0
