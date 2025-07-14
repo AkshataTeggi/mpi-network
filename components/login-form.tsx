@@ -678,9 +678,166 @@
 
 
 
+// "use client"
+
+// import type React from "react"
+// import { useState } from "react"
+// import { Button } from "@/components/ui/button"
+// import { Input } from "@/components/ui/input"
+// import { Label } from "@/components/ui/label"
+// import Image from "next/image"
+// import { LogIn, Loader2 } from "lucide-react"
+// import { API_BASE_URL } from "@/lib/constants"
+
+// interface LoginFormProps {
+//   onLogin: (userData: any, permissions: string[]) => void
+// }
+
+// const LOGO_URL =
+//   "/logo.svg"
+
+// export default function LoginForm({ onLogin }: LoginFormProps) {
+//   const [email, setEmail] = useState("")
+//   const [password, setPassword] = useState("")
+//   const [error, setError] = useState("")
+//   const [isLoading, setIsLoading] = useState(false)
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault()
+
+//     if (!email || !password) {
+//       setError("Please enter both email and password")
+//       return
+//     }
+
+//     setIsLoading(true)
+//     setError("")
+
+//     try {
+//       const response = await fetch(`${API_BASE_URL}/auth/login`, {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({ email, password }),
+//       })
+
+//       const data = await response.json()
+
+//       if (!response.ok) {
+//         throw new Error(data.message || "Login failed")
+//       }
+
+//       if (data.accessToken) localStorage.setItem("access_token", data.accessToken)
+//       if (data.refreshToken) localStorage.setItem("refresh_token", data.refreshToken)
+
+//       const designation = data.designation?.title
+//       if (!designation) {
+//         throw new Error("Designation not found ")
+//       }
+//       localStorage.setItem("designation", designation.toLowerCase())
+
+//       const menus =
+//         data.designation?.permissions?.map(
+//           (p: { name: string }) => p.name.toLowerCase()
+//         ) || []
+//       localStorage.setItem("menus", JSON.stringify(menus))
+
+//       localStorage.setItem("username", data.username || "")
+
+//       onLogin(data, menus)
+//     } catch (err) {
+//       console.error("Login error:", err)
+//       setError(err instanceof Error ? err.message : "An error occurred during login")
+//     } finally {
+//       setIsLoading(false)
+//     }
+//   }
+
+//   return (
+//     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+//       <div className="w-full max-w-sm">
+//         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+//           <div className="flex justify-center mb-4">
+//             <Image
+//               src={LOGO_URL}
+//               alt="Network PCB Logo"
+//               width={180}
+//               height={100}
+//               className="h-auto"
+//               priority
+//             />
+//           </div>
+//           <h2 className="text-lg font-bold text-center text-[hsl(var(--primary))] mb-4 -mt-10">
+//             Manufacturing Process
+//           </h2>
+
+//           {error && (
+//             <div className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-2 rounded-md mb-3 text-xs">
+//               {error}
+//             </div>
+//           )}
+
+//           <form onSubmit={handleSubmit} className="space-y-3">
+//             <div className="space-y-1">
+//               <Label htmlFor="email" className="text-sm">
+//                 Email
+//               </Label>
+//               <Input
+//                 id="email"
+//                 type="email"
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//                 placeholder="Enter your email"
+//                 className="h-8 text-sm"
+//                 disabled={isLoading}
+//               />
+//             </div>
+//             <div className="space-y-1">
+//               <Label htmlFor="password" className="text-sm">
+//                 Password
+//               </Label>
+//               <Input
+//                 id="password"
+//                 type="password"
+//                 value={password}
+//                 onChange={(e) => setPassword(e.target.value)}
+//                 placeholder="Enter your password"
+//                 className="h-8 text-sm"
+//                 disabled={isLoading}
+//               />
+//             </div>
+//             <Button
+//               type="submit"
+//               disabled={isLoading}
+//               className="w-full bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.9)] text-white flex items-center justify-center gap-1.5"
+//             >
+//               {isLoading ? (
+//                 <>
+//                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
+//                   <span>Signing In...</span>
+//                 </>
+//               ) : (
+//                 <>
+//                   <LogIn className="h-3.5 w-3.5" />
+//                   <span>Sign In</span>
+//                 </>
+//               )}
+//             </Button>
+//           </form>
+//         </div>
+//       </div>
+//     </div>
+//   )
+// }
+
+
+
+
+
+// components/login/LoginForm.tsx ------------------------------------------
 "use client"
 
-import type React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -688,145 +845,65 @@ import { Label } from "@/components/ui/label"
 import Image from "next/image"
 import { LogIn, Loader2 } from "lucide-react"
 import { API_BASE_URL } from "@/lib/constants"
+import { saveAuth } from "@/utils/auth"
 
-interface LoginFormProps {
-  onLogin: (userData: any, permissions: string[]) => void
-}
+const LOGO_URL = "/logo.svg"
 
-const LOGO_URL =
-  "/logo.svg"
-
-export default function LoginForm({ onLogin }: LoginFormProps) {
+export default function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [err, setErr] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (!email || !password) {
-      setError("Please enter both email and password")
-      return
-    }
-
-    setIsLoading(true)
-    setError("")
-
+    if (!email || !password) return setErr("Email and password required")
+    setLoading(true)
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const r = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       })
+      const d = await r.json()
+      if (!r.ok) throw new Error(d.message || "Login failed")
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed")
-      }
-
-      if (data.accessToken) localStorage.setItem("access_token", data.accessToken)
-      if (data.refreshToken) localStorage.setItem("refresh_token", data.refreshToken)
-
-      const designation = data.designation?.title
-      if (!designation) {
-        throw new Error("Designation not found ")
-      }
-      localStorage.setItem("designation", designation.toLowerCase())
-
-      const menus =
-        data.designation?.permissions?.map(
-          (p: { name: string }) => p.name.toLowerCase()
-        ) || []
-      localStorage.setItem("menus", JSON.stringify(menus))
-
-      localStorage.setItem("username", data.username || "")
-
-      onLogin(data, menus)
-    } catch (err) {
-      console.error("Login error:", err)
-      setError(err instanceof Error ? err.message : "An error occurred during login")
+      saveAuth({
+        accessToken: d.accessToken,
+        refreshToken: d.refreshToken,
+        role: d.role,
+        menus: d.menus, // backend-provided menu IDs
+        username: d.username || "",
+      })
+      window.location.href = "/dashboard"
+    } catch (e: any) {
+      setErr(e.message || "Login error")
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-      <div className="w-full max-w-sm">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
-          <div className="flex justify-center mb-4">
-            <Image
-              src={LOGO_URL}
-              alt="Network PCB Logo"
-              width={180}
-              height={100}
-              className="h-auto"
-              priority
-            />
-          </div>
-          <h2 className="text-lg font-bold text-center text-[hsl(var(--primary))] mb-4 -mt-10">
-            Manufacturing Process
-          </h2>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+      <form
+        onSubmit={submit}
+        className="w-full max-w-sm space-y-3 rounded-lg bg-white p-6 shadow"
+      >
+        <Image src={LOGO_URL} alt="Logo" width={160} height={80} className="mx-auto mb-4" />
+        {err && <p className="text-xs text-red-600">{err}</p>}
 
-          {error && (
-            <div className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-2 rounded-md mb-3 text-xs">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="space-y-1">
-              <Label htmlFor="email" className="text-sm">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="h-8 text-sm"
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="password" className="text-sm">
-                Password
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                className="h-8 text-sm"
-                disabled={isLoading}
-              />
-            </div>
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.9)] text-white flex items-center justify-center gap-1.5"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  <span>Signing In...</span>
-                </>
-              ) : (
-                <>
-                  <LogIn className="h-3.5 w-3.5" />
-                  <span>Sign In</span>
-                </>
-              )}
-            </Button>
-          </form>
+        <div>
+          <Label htmlFor="e" className="text-xs">Email</Label>
+          <Input id="e" value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} />
         </div>
-      </div>
+        <div>
+          <Label htmlFor="p" className="text-xs">Password</Label>
+          <Input id="p" type="password" value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} />
+        </div>
+        <Button type="submit" disabled={loading} className="flex w-full gap-2">
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />} {loading ? "Signing in…" : "Sign in"}
+        </Button>
+      </form>
     </div>
   )
 }
