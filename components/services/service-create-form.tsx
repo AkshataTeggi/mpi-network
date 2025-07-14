@@ -16,9 +16,6 @@ import { useToast } from "@/hooks/use-toast"
 import { ServiceAPI } from "./service-api" // Corrected import
 import type { CreateServiceDto } from "./types"
 
-/* ------------------------------------------------------------------ */
-/* Zod schema                                                          */
-/* ------------------------------------------------------------------ */
 
 const formSchema = z.object({
   name: z.string().min(1, "Service name is required").max(100),
@@ -26,10 +23,6 @@ const formSchema = z.object({
 })
 
 type FormData = z.infer<typeof formSchema>
-
-/* ------------------------------------------------------------------ */
-/* ServiceCreateForm component                                         */
-/* ------------------------------------------------------------------ */
 
 interface ServiceCreateFormProps {
   onSuccess?: () => void
