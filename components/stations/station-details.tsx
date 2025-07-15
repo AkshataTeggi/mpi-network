@@ -2299,6 +2299,7 @@ import { useToast } from "@/hooks/use-toast"
 import { StationDocumentationApi } from "./station-docs-api"
 import { StationFlowchartsApi } from "./station-flowcharts-api"
 import { useState } from "react"
+import { HasPermission } from "../HasPermission"
 
 interface StationDetailsProps {
   station: Station
@@ -2441,7 +2442,7 @@ export function StationDetails({ station, onEdit, onBack, onDelete }: StationDet
             <h1 className="text-2xl font-bold text-green-600">Station Details</h1>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <Button variant="outline" onClick={onBack}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
@@ -2458,8 +2459,40 @@ export function StationDetails({ station, onEdit, onBack, onDelete }: StationDet
             <Trash2 className="w-4 h-4" />
             Delete
           </Button>
-        </div>
+        </div> */}
+
+
+        <div className="flex items-center gap-2">
+  <Button variant="outline" onClick={onBack}>
+    <ArrowLeft className="w-4 h-4 mr-2" />
+    Back
+  </Button>
+
+  <HasPermission permission="UPDATE_STATION">
+    <Button
+      onClick={onEdit}
+      className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+    >
+      <Edit className="w-4 h-4" />
+      Edit
+    </Button>
+  </HasPermission>
+
+  <HasPermission permission="DELETE_STATION">
+    <Button
+      variant="outline"
+      onClick={handleDeleteClick}
+      className="flex items-center gap-2 text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200 bg-transparent"
+    >
+      <Trash2 className="w-4 h-4" />
+      Delete
+    </Button>
+  </HasPermission>
+</div>
       </div>
+
+
+   
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

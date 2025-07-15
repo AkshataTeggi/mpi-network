@@ -474,6 +474,7 @@ import { Input } from "@/components/ui/input"
 import { Settings, Plus, Loader2, AlertCircle, Search, FileText, CheckCircle, XCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
+import { getAccessToken } from "@/lib/auth"
 
 // Types
 interface OrderForm {
@@ -504,7 +505,13 @@ interface MPI {
 
 // API Functions
 const fetchMPIs = async (): Promise<MPI[]> => {
-  const response = await fetch("http://35.166.254.199:5000/mpi")
+  const token = getAccessToken()          // ✅ read token
+  const response = await fetch("http://35.166.254.199:5000/mpi", {
+    headers: {
+      Authorization: `Bearer ${token}`,    // ✅ attach token
+    },
+  })
+
   if (!response.ok) {
     throw new Error("Failed to fetch MPIs")
   }
