@@ -1,24 +1,3 @@
-// import { API_BASE_URL } from "@/lib/constants"
-// import axios from "axios"
-
-
-// export async function getAllPermissions() {
-//   try {
-//     const response = await axios.get(`${API_BASE_URL}/authorization/permissions`)
-//     return response.data
-//   } catch (error) {
-//     console.error("Error fetching permissions:", error)
-//     throw new Error("Failed to fetch permissions")
-//   }
-// }
-
-
-
-
-
-
-
-
 
 
 import { API_BASE_URL } from "@/lib/constants"

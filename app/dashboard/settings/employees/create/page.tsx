@@ -1,12 +1,3 @@
-// app/dashboard/employees/create/page.tsx
-
-// import { EmployeeService } from "@/components/employees/employee-service"
-
-// export default function EmployeeCreatePage() {
-//   return <EmployeeService initialView="create" />
-// }
-
-
 
 
 // app/dashboard/employees/page.tsx
